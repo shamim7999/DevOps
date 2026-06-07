@@ -1,0 +1,13 @@
+# Environment variables
+.env
+.env.*
+*.env
+
+# Temporary files
+.tmp
+.tmp.*
+*.tmp
+
+.swp
+.swp.*
+*.swp

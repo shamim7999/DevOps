@@ -1,0 +1,10 @@
+---
+- name: Deploy e-ticket
+  hosts: managed
+  become: true
+
+  vars:
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') }}"
+
+  roles:
+    - deploy
