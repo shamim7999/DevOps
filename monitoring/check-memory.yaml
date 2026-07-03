@@ -26,6 +26,7 @@
 
   vars_files:
     - vars/mail.yaml
+    - vars/chat.yaml
 
   tasks:
 
@@ -56,3 +57,14 @@
         subject: "Low Memory Alert"
         body: "{{ report }}"
       when: report is search('Server')
+
+    - name: Send Google Chat notification
+      uri:
+        url: "{{ google_chat_webhook }}"
+        method: POST
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+        body:
+          text: "{{ report }}"
+        status_code: 200
