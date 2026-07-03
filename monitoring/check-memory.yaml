@@ -1,0 +1,58 @@
+---
+- name: Check memory on all servers
+  hosts: stage-app-servers
+  gather_facts: true
+
+  vars:
+    min_free_mb: 2048
+
+  tasks:
+
+    - name: Save low memory information
+      set_fact:
+        low_memory_info: |
+          ----------------------------------------
+          Server      : {{ inventory_hostname }}
+          IP Address  : {{ ansible_host }}
+          Free Memory : {{ ansible_facts.memfree_mb }} MB
+          Total Memory: {{ ansible_facts.memtotal_mb }} MB
+          Free Percent: {{ (ansible_facts.memfree_mb * 100 / ansible_facts.memtotal_mb) | round(1) }} %
+      when: ansible_facts.memfree_mb < min_free_mb
+
+
+- name: Send summary email
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - vars/mail.yaml
+
+  tasks:
+
+    - name: Read recipients
+      set_fact:
+        recipients: "{{ lookup('file', 'recipients.txt').splitlines() }}"
+
+    - name: Build report
+      set_fact:
+        report: |
+          The following STAGE APP SERVERS have less than 2 GB free memory.
+
+          {% for host in groups['stage-app-servers'] %}
+          {% if hostvars[host].low_memory_info is defined %}
+          {{ hostvars[host].low_memory_info }}
+
+          {% endif %}
+          {% endfor %}
+
+    - name: Send email
+      community.general.mail:
+        host: "{{ smtp_host }}"
+        port: "{{ smtp_port }}"
+        secure: starttls
+        username: "{{ smtp_user }}"
+        password: "{{ smtp_password }}"
+        to: "{{ recipients | join(',') }}"
+        subject: "Low Memory Alert"
+        body: "{{ report }}"
+      when: report is search('Server')
