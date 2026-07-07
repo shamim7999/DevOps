@@ -1,0 +1,17 @@
+groups:
+  - name: memory_alerts
+
+    rules:
+      - alert: LowMemory
+
+        expr: node_memory_MemFree_bytes / 1024 / 1024 < 2048
+
+        for: 1m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: 'Low memory on {{ $labels.instance }}'
+          description: 'Available memory has fallen below the configured threshold.'
+          current_memory: '{{ printf "%.1f MiB" $value }}'

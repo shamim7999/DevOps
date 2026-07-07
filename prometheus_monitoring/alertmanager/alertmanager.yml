@@ -1,0 +1,19 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'x@gmail.com'
+  smtp_auth_username: 'x@gmail.com'
+  smtp_auth_password: 'x'
+  smtp_require_tls: true
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+route:
+  receiver: dev-team
+
+receivers:
+- name: dev-team
+  email_configs:
+  - to: 'x@gmail.com'
+    send_resolved: true
+    html: '{{ template "email.html" . }}'

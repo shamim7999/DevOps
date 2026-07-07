@@ -1,0 +1,28 @@
+{{ define "email.html" }}
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, Helvetica, sans-serif; font-size:14px;">
+
+<h2>🚨 Low Memory Alert</h2>
+
+{{ range .Alerts }}
+<pre style="font-family: Consolas, monospace;">
+Server      : {{ .Labels.instance }}
+Job         : {{ .Labels.job }}
+Severity    : {{ .Labels.severity }}
+
+Issue:
+Available memory has fallen below the configured threshold.
+
+Current Available Memory:
+{{ .Annotations.current_memory }}
+
+Alert Time:
+{{ .StartsAt.Local.Format "2006-01-02 15:04:05 MST" }}
+</pre>
+<hr>
+{{ end }}
+
+</body>
+</html>
+{{ end }}

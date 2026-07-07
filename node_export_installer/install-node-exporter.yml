@@ -1,0 +1,45 @@
+---
+- name: Install Prometheus Node Exporter Docker Container
+  hosts: app-servers
+  become: true
+  gather_facts: true
+
+  vars:
+    node_exporter_image: prom/node-exporter:latest
+    node_exporter_container: node-exporter
+    node_exporter_port: 9100
+
+  tasks:
+
+    - name: Pull latest node_exporter image
+      community.docker.docker_image:
+        name: "{{ node_exporter_image }}"
+        source: pull
+
+    - name: Remove existing node_exporter container if present
+      community.docker.docker_container:
+        name: "{{ node_exporter_container }}"
+        state: absent
+
+    - name: Run node_exporter container
+      community.docker.docker_container:
+        name: "{{ node_exporter_container }}"
+        image: "{{ node_exporter_image }}"
+        state: started
+        restart_policy: unless-stopped
+        network_mode: host
+        pid_mode: host
+        command:
+          - "--path.rootfs=/host"
+        volumes:
+          - "/:/host:ro,rslave"
+
+    - name: Verify node_exporter is running
+      community.docker.docker_container_info:
+        name: "{{ node_exporter_container }}"
+      register: exporter
+
+    - name: Show status
+      debug:
+        msg: "Node Exporter is running on {{ inventory_hostname }} ({{ ansible_host }})"
+      when: exporter.exists
