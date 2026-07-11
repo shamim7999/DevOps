@@ -1,4 +1,12 @@
 ---
+- name: Create logs directory
+  file:
+    path: "{{ log_dir }}/app.log"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
 - name: Copy docker-compose file
   copy:
     src: files/docker-compose-prod.yml
