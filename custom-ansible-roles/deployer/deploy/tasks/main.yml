@@ -1,7 +1,7 @@
 ---
 - name: Create logs directory
   file:
-    path: "{{ log_dir }}/app.log"
+    path: "{{ log_dir }}"
     state: directory
     owner: ubuntu
     group: ubuntu
