@@ -30,5 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
+    volumes:
+      - /opt/app_logs/e-ticket:/opt/app_logs/e-ticket
+
 volumes:
   pgdata:
